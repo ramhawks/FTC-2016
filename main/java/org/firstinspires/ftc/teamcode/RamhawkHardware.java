@@ -7,6 +7,13 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+/**
+ *
+ *
+ * Right here
+ *
+ *
+ */
 public class RamhawkHardware {
     /* Public OpMode members. */
     public DcMotor  leftMotor   = null;
