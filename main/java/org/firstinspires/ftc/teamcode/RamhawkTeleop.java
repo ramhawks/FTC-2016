@@ -36,6 +36,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -122,8 +123,8 @@ public class RamhawkTeleop extends LinearOpMode {
 
             // Move both servos to new position.  Assume servos are mirror image of each other.
             clawOffset = Range.clip(clawOffset, -0.5, 0.5);
-            robot.leftClaw.setPosition(RamhawkHardware.MID_SERVO + clawOffset);
-            robot.rightClaw.setPosition(RamhawkHardware.MID_SERVO - clawOffset);
+            /*robot.leftClaw.setPosition(RamhawkHardware.MID_SERVO + clawOffset);
+            robot.rightClaw.setPosition(RamhawkHardware.MID_SERVO - clawOffset);*/
 
             // Use gamepad buttons to move arm up (Y) and down (A)
             if (gamepad1.y)
@@ -136,8 +137,6 @@ public class RamhawkTeleop extends LinearOpMode {
             colorLedCurrentState = gamepad1.x;
 
             // check for button state transitions.
-
-            telemetry.addData("X", gamepad1.x ? "yes" : "no");
             if (colorLedCurrentState && !colorLedPreviousState)  {
                 // button is transitioning to a pressed state. So Toggle LED
                 robot.ledOn = !robot.ledOn;
@@ -166,11 +165,11 @@ public class RamhawkTeleop extends LinearOpMode {
             telemetry.addData("Saturation", robot.hsvValues[1]);
             telemetry.addData("Value", robot.hsvValues[2]);
 
-            /*relativeLayout.post(new Runnable() {
+            relativeLayout.post(new Runnable() {
                 public void run() {
                     relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, robot.hsvValues));
                 }
-            });*/
+            });
 
             telemetry.update();
 
