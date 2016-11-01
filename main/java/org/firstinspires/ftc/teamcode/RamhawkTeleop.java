@@ -71,6 +71,7 @@ public class RamhawkTeleop extends LinearOpMode {
         double right;
         double max;
 
+
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
