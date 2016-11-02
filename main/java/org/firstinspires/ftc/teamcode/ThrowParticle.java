@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
- * Created by Team3090 on 10/25/2016.
+ * Created by Team 11581 on 10/25/2016.
  */
 
 public class ThrowParticle extends LinearOpMode {

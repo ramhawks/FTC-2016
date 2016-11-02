@@ -1,1 +1,2 @@
 # FTC-2016
+This repository's root directory is in the "TeamCode/src" folder of the FTC Android Studio Project (see [ftc_app](https://github.com/ftctechnh/ftc_app)). We put it there because most of the rest of the project consists of build files, example code, and libraries.

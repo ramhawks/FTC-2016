@@ -36,34 +36,14 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
-
-/**
- * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
- * All device access is managed through the HardwarePushbot class.
- * The code is structured as a LinearOpMode
- * <p>
- * This particular OpMode executes a POV Game style Teleop for a PushBot
- * In this mode the left stick moves the robot FWD and back, the Right stick turns left and right.
- * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
- * <p>
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
-
-@TeleOp(name = "Ramhawk Teleop", group = "Pushbot")
+@TeleOp(name = "Ramhawk Teleop", group = "Main")
 public class RamhawkTeleop extends LinearOpMode {
-
-    /* Declare OpMode members. */
+    // Hardware
     private RamhawkHardware robot = new RamhawkHardware();
-
-    private double clawOffset = 0;
-    private final double CLAW_SPEED = 0.02;
 
     @Override
     public void runOpMode() {
@@ -71,29 +51,26 @@ public class RamhawkTeleop extends LinearOpMode {
         double right;
         double max;
 
-
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
+        // Get hardware ready
         robot.init(hardwareMap);
 
+        // Robot Controller's layout
         final View relativeLayout = ((Activity) robot.hwMap.appContext).findViewById(R.id.RelativeLayout);
 
-        // Send telemetry message to signify robot waiting;
+        // Greet the driver
         telemetry.addData("Say", "Hello Driver");    //
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        // Vars for keeping track of the state of LED
         boolean colorLedCurrentState;
         boolean colorLedPreviousState = false;
 
-        // run until the end of the match (driver presses STOP)
+        // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+            // Get joystick input from driver
             left = -gamepad1.left_stick_y + gamepad1.right_stick_x;
             right = -gamepad1.left_stick_y - gamepad1.right_stick_x;
 
@@ -114,17 +91,6 @@ public class RamhawkTeleop extends LinearOpMode {
 
             robot.leftMotor.setPower(left);
             robot.rightMotor.setPower(right);
-
-            // Use gamepad left & right Bumpers to open and close the claw
-            if (gamepad1.right_bumper)
-                clawOffset += CLAW_SPEED;
-            else if (gamepad1.left_bumper)
-                clawOffset -= CLAW_SPEED;
-
-            // Move both servos to new position.  Assume servos are mirror image of each other.
-            clawOffset = Range.clip(clawOffset, -0.5, 0.5);
-            /*robot.leftClaw.setPosition(RamhawkHardware.MID_SERVO + clawOffset);
-            robot.rightClaw.setPosition(RamhawkHardware.MID_SERVO - clawOffset);*/
 
             // Use gamepad buttons to move arm up (Y) and down (A)
             if (gamepad1.y) {
@@ -151,15 +117,16 @@ public class RamhawkTeleop extends LinearOpMode {
 
             Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, robot.hsvValues);
 
-            // Send telemetry message to signify robot running;
-            telemetry.addData("claw", "Offset = %.2f", clawOffset);
+            // Data relevant to drive
             telemetry.addData("left", "%.2f", left);
             telemetry.addData("right", "%.2f", right);
 
+            // Data Relevant to distance sensor
             telemetry.addData("Raw", robot.distanceSensor.getRawLightDetected());
             telemetry.addData("Normal", robot.distanceSensor.getLightDetected());
             telemetry.addData("Raw Max", robot.distanceSensor.getRawLightDetectedMax());
 
+            // Data relevant to LED
             telemetry.addData("LED", robot.ledOn ? "On" : "Off");
             telemetry.addData("Clear", robot.colorSensor.alpha());
             telemetry.addData("Red  ", robot.colorSensor.red());
@@ -169,12 +136,14 @@ public class RamhawkTeleop extends LinearOpMode {
             telemetry.addData("Saturation", robot.hsvValues[1]);
             telemetry.addData("Value", robot.hsvValues[2]);
 
+            // Change Robot Controller's background color to color sensor's readings
             relativeLayout.post(new Runnable() {
                 public void run() {
                     relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, robot.hsvValues));
                 }
             });
 
+            // Send data to driver
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.

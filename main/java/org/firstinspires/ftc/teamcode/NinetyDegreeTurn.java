@@ -8,28 +8,25 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "90 degree turn", group = "Testing")
+@Autonomous(name = "90 Degree Turn", group = "Testing")
 public class NinetyDegreeTurn extends LinearOpMode {
-    // Turn time
-    private RamhawkHardware robot           = new RamhawkHardware();
+    private RamhawkHardware robot = new RamhawkHardware();
 
     private static double turnTime = 1.8;
 
-    static final double TURN_SPEED = 0.5;
+    private static final double TURN_SPEED = 0.5;
     private ElapsedTime runtime = new ElapsedTime();
-
 
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);
 
+        // Layour for Robot Controller
         final View relativeLayout = ((Activity) robot.hwMap.appContext).findViewById(R.id.RelativeLayout);
-
-
 
         waitForStart();
 
-        //Message to driver station
+        // Message to driver station
         telemetry.addData("Status", "Ready to run");
         telemetry.update();
 
@@ -41,11 +38,14 @@ public class NinetyDegreeTurn extends LinearOpMode {
             telemetry.addData("Path", "Leg 2: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
+        robot.waitForTick(40);
     }
 
     private boolean yBefore = false;
     private boolean aBefore = false;
 
+    // Adjust Turn Time prior to turning
     @Override
     protected void handleLoop() {
         super.handleLoop();
@@ -66,10 +66,8 @@ public class NinetyDegreeTurn extends LinearOpMode {
                 turnTime -= 0.05;
                 aBefore = true;
             }
-        } else {
-            aBefore = false;
-        }
+        } else aBefore = false;
 
-        telemetry.addData("turnTime", turnTime);
+        telemetry.addData("turn time", turnTime);
     }
 }

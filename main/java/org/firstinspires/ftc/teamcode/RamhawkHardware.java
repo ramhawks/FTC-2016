@@ -8,36 +8,32 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class RamhawkHardware {
-    /* Public OpMode members. */
-    public DcMotor leftMotor = null;
-    public DcMotor rightMotor = null;
-    public DcMotor armMotor1 = null;
-    public DcMotor armMotor2 = null;
-    //public Servo    leftClaw    = null;
-    //public Servo rightClaw   = null;
+class RamhawkHardware {
+    // Motors
+    DcMotor leftMotor = null;
+    DcMotor rightMotor = null;
+    DcMotor armMotor1 = null;
+    DcMotor armMotor2 = null;
 
     // Color Sensor
-    public ColorSensor colorSensor = null;
-    public boolean ledOn = false;
-    public float[] hsvValues = {0f, 0f, 0f};
+    ColorSensor colorSensor = null;
+    boolean ledOn = false;
+    float[] hsvValues = {0f, 0f, 0f};
 
-    public static final double MID_SERVO = 0.5;
-    public static final double ARM_UP_POWER = 1;
-    public static final double ARM_DOWN_POWER = -0.45;
+    // Arm thrusts for both direction
+    static final double ARM_UP_POWER = 1;
+    static final double ARM_DOWN_POWER = -0.45;
 
-    public OpticalDistanceSensor distanceSensor;
+    // Distance Sensor
+    OpticalDistanceSensor distanceSensor;
 
-    /* local OpMode members. */
+    // Hardware Maps
     HardwareMap hwMap = null;
+
+    // Timer for tick
     private ElapsedTime period = new ElapsedTime();
 
-    /* Constructor */
-    public RamhawkHardware() {
-
-    }
-
-    /* Initialize standard Hardware interfaces */
+    // Initialize hardware
     public void init(HardwareMap ahwMap) {
         // Save reference to Hardware map
         hwMap = ahwMap;
@@ -48,11 +44,13 @@ public class RamhawkHardware {
         armMotor1 = hwMap.dcMotor.get("throw1");
         armMotor2 = hwMap.dcMotor.get("throw2");
 
+        // Set directions of motors
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         armMotor1.setDirection(DcMotor.Direction.REVERSE);
         armMotor2.setDirection(DcMotor.Direction.REVERSE);
 
+        // Initialize color sensor
         colorSensor = hwMap.colorSensor.get("color_sensor");
         colorSensor.enableLed(ledOn);
 
@@ -63,17 +61,10 @@ public class RamhawkHardware {
         armMotor2.setPower(0);
 
         // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        // Define and initialize ALL installed servos.
-        /*leftClaw = hwMap.servo.get("left_hand");
-        rightClaw = hwMap.servo.get("right_hand");
-        leftClaw.setPosition(MID_SERVO);
-        rightClaw.setPosition(MID_SERVO);*/
 
         distanceSensor = hwMap.opticalDistanceSensor.get("sensor_ods");
     }
