@@ -43,6 +43,9 @@ public class NinetyDegreeTurn extends LinearOpMode {
         }
     }
 
+    private boolean yBefore = false;
+    private boolean aBefore = false;
+
     @Override
     protected void handleLoop() {
         super.handleLoop();
@@ -52,12 +55,19 @@ public class NinetyDegreeTurn extends LinearOpMode {
         telemetry.update();
 
         if (gamepad1.y) {
-            turnTime = turnTime + 0.05;
-            sleep(1000);
-        }
+            if (!yBefore) {
+                turnTime += 0.05;
+                yBefore = true;
+            }
+        } else yBefore = false;
+
         if (gamepad1.a) {
-            turnTime = turnTime - 0.05;
-            sleep(1000);
+            if (!aBefore) {
+                turnTime -= 0.05;
+                aBefore = true;
+            }
+        } else {
+            aBefore = false;
         }
 
         telemetry.addData("turnTime", turnTime);
