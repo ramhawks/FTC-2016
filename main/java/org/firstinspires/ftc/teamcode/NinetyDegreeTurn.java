@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "90 degree turn", group = "Testing")
 public class NinetyDegreeTurn extends LinearOpMode {
     // Turn time
-    private static double turnTime = 1.3;
+    private RamhawkHardware robot           = new RamhawkHardware();
 
-    private RamhawkHardware hardware;
+    private static double turnTime = 1.8;
 
     static final double TURN_SPEED = 0.5;
     private ElapsedTime runtime = new ElapsedTime();
@@ -21,9 +21,9 @@ public class NinetyDegreeTurn extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
 
-        hardware.init(hardwareMap);
+        robot.init(hardwareMap);
 
-        final View relativeLayout = ((Activity) hardware.hwMap.appContext).findViewById(R.id.RelativeLayout);
+        final View relativeLayout = ((Activity) robot.hwMap.appContext).findViewById(R.id.RelativeLayout);
 
 
 
@@ -33,8 +33,8 @@ public class NinetyDegreeTurn extends LinearOpMode {
         telemetry.addData("Status", "Ready to run");
         telemetry.update();
 
-        hardware.leftMotor.setPower(TURN_SPEED);
-        hardware.rightMotor.setPower(-TURN_SPEED);
+        robot.leftMotor.setPower(TURN_SPEED);
+        robot.rightMotor.setPower(-TURN_SPEED);
         runtime.reset();
 
         while (opModeIsActive() && (runtime.seconds() < turnTime)) {
@@ -53,9 +53,13 @@ public class NinetyDegreeTurn extends LinearOpMode {
 
         if (gamepad1.y) {
             turnTime = turnTime + 0.05;
+            sleep(1000);
         }
         if (gamepad1.a) {
             turnTime = turnTime - 0.05;
+            sleep(1000);
         }
+
+        telemetry.addData("turnTime", turnTime);
     }
 }
