@@ -21,7 +21,7 @@ public class NinetyDegreeTurn extends LinearOpMode {
 
         robot.init(hardwareMap);
 
-        // Layour for Robot Controller
+        // Layout for Robot Controller
         final View relativeLayout = ((Activity) robot.hwMap.appContext).findViewById(R.id.RelativeLayout);
 
         waitForStart();
