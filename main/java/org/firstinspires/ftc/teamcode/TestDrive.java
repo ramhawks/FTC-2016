@@ -5,8 +5,53 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "Test Drive", group = "Testing")
-public class TestDrive extends LinearOpMode {
+public class TestDrive extends DebuggableOpMode {
     private RamhawkHardware robot;
+    private double driveTime;
+    private double speed;
+
+    private ElapsedTime timer;
+
+    @Override
+    void m_init() {
+        timer = new ElapsedTime();
+
+        robot = new RamhawkHardware();
+        robot.init(hardwareMap);
+        driveTime = 1.0;
+        speed = 0.5;
+
+        addDebugVar("Drive Time", driveTime);
+        addDebugVar("Speed", speed);
+    }
+
+    @Override
+    void m_loop() {
+        while (timer.seconds() <= driveTime) {
+            robot.leftMotor.setPower(speed);
+            robot.rightMotor.setPower(speed);
+
+            robot.waitForTick(40);
+        }
+
+        robot.leftMotor.setPower(0);
+        robot.rightMotor.setPower(0);
+    }
+
+    @Override
+    void m_init_loop() {
+
+    }
+
+    @Override
+    void setDebugVars(Object[] values) {
+        driveTime = (Double) values[0];
+        speed = (Double) values[1];
+    }
+
+
+
+    /*private RamhawkHardware robot;
     private double driveTime;
     private double speed;
     private boolean yBefore;
@@ -90,5 +135,5 @@ public class TestDrive extends LinearOpMode {
                 aBefore = true;
             }
         } else aBefore = false;
-    }
+    }*/
 }
