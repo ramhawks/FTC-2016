@@ -13,7 +13,14 @@ public abstract class DebuggableOpMode extends OpMode {
 
     private boolean debug;
     private boolean leave_debug;
+
     private boolean all_before;
+    private boolean dpad_up_before;
+    private boolean dpad_down_before;
+    private boolean y_before;
+    private boolean a_before;
+    private boolean y;
+    private boolean a;
 
     private ArrayList<DebugVar> vars;
     private int index;
@@ -24,9 +31,17 @@ public abstract class DebuggableOpMode extends OpMode {
     @Override
     public final void init() {
         debug = false;
-        all_before = false;
+
         leave_debug = true;
         vars = new ArrayList<>();
+
+        all_before = false;
+        dpad_up_before = false;
+        dpad_down_before = false;
+        y_before = false;
+        a_before = false;
+        y = false;
+        a = false;
 
         m_init();
     }
@@ -40,39 +55,9 @@ public abstract class DebuggableOpMode extends OpMode {
             if (!all_before) {
                 debug = !debug;
                 if (!debug) leave_debug = true;
+                all_before = true;
             }
         } else all_before = false;
-
-        if (debug) {
-
-            telemetry.addLine("DEBUG MODE");
-
-            DebugVar obj = vars.get(index);
-
-            if (obj.value instanceof Integer)
-                obj.value = (Integer) obj.value + (gamepad1.y ? 1 : (gamepad1.a ? -1 : 0));
-            else if (obj.value instanceof Double)
-                obj.value = (Double) obj.value + (gamepad1.y ? 0.05d : (gamepad1.a ? -0.05d : 0.0d));
-            else if (obj.value instanceof Boolean && (gamepad1.y || gamepad1.a))
-                obj.value = !((Boolean) obj.value);
-            vars.set(index, obj);
-
-            if (gamepad1.dpad_up) {
-                index--;
-                if (index < 0) index = vars.size() - 1;
-            } else if (gamepad1.dpad_down) {
-                index++;
-                if (index >= vars.size()) index = 0;
-            }
-
-            for (int i = 0; i < vars.size(); i++) {
-                telemetry.addData(
-                        (i == index ? "--> " : "    ") + obj.name, obj.value);
-            }
-
-            telemetry.update();
-
-        }
 
         if (leave_debug) {
             Object[] values = new Object[vars.size()];
@@ -88,7 +73,67 @@ public abstract class DebuggableOpMode extends OpMode {
             leave_debug = false;
         }
 
-        m_loop();
+        if (debug) {
+
+            telemetry.addLine("DEBUG MODE");
+
+            DebugVar obj;
+            for (int i = 0; i < vars.size(); i++) {
+                obj = vars.get(i);
+                telemetry.addData(
+                        (i == index ? "--> " : "    ") + obj.name, obj.value);
+            }
+
+            // TODO CHANGE BACK telemetry.update();
+
+            obj = vars.get(index);
+
+            y = false;
+            if (gamepad1.y) {
+                if (!y_before) {
+                    y = true;
+                    y_before = true;
+                }
+            } else y_before = false;
+
+            a = false;
+            if (gamepad1.a) {
+                if (!a_before) {
+                    a = true;
+                    a_before = true;
+                }
+            } else a_before = false;
+
+            telemetry.addData("y", y);
+            telemetry.addData("a", a);
+            telemetry.update();
+
+            if (obj.value instanceof Integer)
+                obj.value = (Integer) obj.value + (y ? 1 : (a ? -1 : 0));
+            else if (obj.value instanceof Double)
+                obj.value = (Double) obj.value + (y ? 0.05d : (a ? -0.05d : 0.0d));
+            else if (obj.value instanceof Boolean && (y || a))
+                obj.value = !((Boolean) obj.value);
+            vars.set(index, obj);
+
+            if (gamepad1.dpad_up) {
+                if (!dpad_up_before) {
+                    index--;
+                    if (index < 0) index = vars.size() - 1;
+                    dpad_up_before = true;
+                }
+            } else if (gamepad1.dpad_down) {
+                dpad_up_before = false;
+                if (!dpad_down_before) {
+                    index++;
+                    if (index >= vars.size()) index = 0;
+                    dpad_down_before = true;
+                }
+            } else {
+                dpad_up_before = false;
+                dpad_down_before = false;
+            }
+        } else m_loop();
     }
 
     // Init loop for subclass
@@ -109,8 +154,9 @@ public abstract class DebuggableOpMode extends OpMode {
     abstract void setDebugVars(Object[] values);
 
     /**
-    Used by subclass to add variable to track
-    @param name is merely used to display vars on driver station
+     * Used by subclass to add variable to track
+     *
+     * @param name is merely used to display vars on driver station
      */
 
     protected final void addDebugVar(String name, Object object) {
