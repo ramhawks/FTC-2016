@@ -14,7 +14,7 @@ public abstract class DebuggableOpMode extends OpMode {
     private boolean debug;
     private boolean leave_debug;
 
-    private boolean all_before;
+    private boolean debug_buttons;
     private boolean dpad_up_before;
     private boolean dpad_down_before;
     private boolean y_before;
@@ -35,7 +35,7 @@ public abstract class DebuggableOpMode extends OpMode {
         leave_debug = true;
         vars = new ArrayList<>();
 
-        all_before = false;
+        debug_buttons = false;
         dpad_up_before = false;
         dpad_down_before = false;
         y_before = false;
@@ -51,13 +51,21 @@ public abstract class DebuggableOpMode extends OpMode {
 
     @Override
     public final void loop() {
-        if (gamepad1.a && gamepad1.b && gamepad1.x && gamepad1.y) {
-            if (!all_before) {
+        if (gamepad1.start && gamepad1.back) {
+            if (!debug_buttons) {
                 debug = !debug;
                 if (!debug) leave_debug = true;
-                all_before = true;
+                debug_buttons = true;
             }
-        } else all_before = false;
+        } else debug_buttons = false;
+
+        /*if (gamepad1.a && gamepad1.b && gamepad1.x && gamepad1.y) {
+            if (!debug_buttons) {
+                debug = !debug;
+                if (!debug) leave_debug = true;
+                debug_buttons = true;
+            }
+        } else debug_buttons = false;*/
 
         if (leave_debug) {
             Object[] values = new Object[vars.size()];
@@ -84,7 +92,7 @@ public abstract class DebuggableOpMode extends OpMode {
                         (i == index ? "--> " : "    ") + obj.name, obj.value);
             }
 
-            // TODO CHANGE BACK telemetry.update();
+            telemetry.update();
 
             obj = vars.get(index);
 
