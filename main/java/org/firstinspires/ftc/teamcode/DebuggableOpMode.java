@@ -51,21 +51,13 @@ public abstract class DebuggableOpMode extends OpMode {
 
     @Override
     public final void loop() {
-        if (gamepad1.start && gamepad1.back) {
+        if (gamepad1.start) {
             if (!debug_buttons) {
                 debug = !debug;
                 if (!debug) leave_debug = true;
                 debug_buttons = true;
             }
         } else debug_buttons = false;
-
-        /*if (gamepad1.a && gamepad1.b && gamepad1.x && gamepad1.y) {
-            if (!debug_buttons) {
-                debug = !debug;
-                if (!debug) leave_debug = true;
-                debug_buttons = true;
-            }
-        } else debug_buttons = false;*/
 
         if (leave_debug) {
             Object[] values = new Object[vars.size()];

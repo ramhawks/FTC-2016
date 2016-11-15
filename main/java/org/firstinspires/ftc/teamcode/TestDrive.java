@@ -30,8 +30,6 @@ public class TestDrive extends DebuggableOpMode {
 
         addDebugVar("Drive Time", driveTime);
         addDebugVar("Speed", speed);
-
-        timer.reset();
     }
 
     @Override
@@ -53,6 +51,7 @@ public class TestDrive extends DebuggableOpMode {
         if (gamepad1.b) {
             if (!go) {
                 running = true;
+                timer.reset();
                 go = true;
             }
         } else go = false;

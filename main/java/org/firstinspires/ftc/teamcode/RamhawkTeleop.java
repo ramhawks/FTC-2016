@@ -95,13 +95,13 @@ public class RamhawkTeleop extends LinearOpMode {
             // Use gamepad buttons to move arm up (Y) and down (A)
             if (gamepad1.y) {
                 robot.armMotor1.setPower(RamhawkHardware.ARM_UP_POWER);
-                robot.armMotor2.setPower(RamhawkHardware.ARM_UP_POWER);
+                // robot.armMotor2.setPower(RamhawkHardware.ARM_UP_POWER);
             } else if (gamepad1.a) {
                 robot.armMotor1.setPower(RamhawkHardware.ARM_DOWN_POWER);
-                robot.armMotor2.setPower(RamhawkHardware.ARM_DOWN_POWER);
+                // robot.armMotor2.setPower(RamhawkHardware.ARM_DOWN_POWER);
             } else {
                 robot.armMotor1.setPower(0.0);
-                robot.armMotor2.setPower(0.0);
+                // robot.armMotor2.setPower(0.0);
             }
 
             colorLedCurrentState = gamepad1.x;
