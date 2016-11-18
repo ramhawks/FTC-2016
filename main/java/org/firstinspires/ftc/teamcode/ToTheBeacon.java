@@ -1,6 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.app.Activity;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Environment;
+import android.view.View;
 import android.widget.Toast;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -8,7 +15,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -27,6 +33,12 @@ public class ToTheBeacon extends OpMode {
 
     private boolean done;
 
+    private boolean turning;
+    private double theta;
+
+    private SensorManager sensorManager;
+    private Sensor sensor;
+
     @Override
     public void init() {
         robot = new RamhawkHardware();
@@ -34,6 +46,47 @@ public class ToTheBeacon extends OpMode {
         done = false;
 
         turnSpeed = 0.5;
+        turning = false;
+
+        sensorManager = (SensorManager) robot.hwMap.appContext.getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
+        sensorManager.registerListener(new SensorEventListener() {
+            private static final double NS2S = 1.0 / 1000000000.0;
+            private double timestamp;
+            public double totalRotation = 0;
+
+            private boolean started = false;
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                if (timestamp != 0) {
+                    final double dT = (event.timestamp - timestamp) * NS2S;
+
+                    // We are just listening to axis Z
+                    double axisZ = (double)event.values[2];
+
+                    totalRotation += axisZ * dT;
+
+                    if (turning) {
+                        if (!started) {
+                            totalRotation = 0;
+                            started = true;
+                        }
+
+                        if (Math.abs(totalRotation) >= Math.abs(theta)) {
+                            turning = false;
+                            started = false;
+                        }
+                    }
+                }
+
+                timestamp = event.timestamp;
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+        }, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private double inchesToSeconds(double distance) {
@@ -60,28 +113,19 @@ public class ToTheBeacon extends OpMode {
         robot.leftMotor.setPower(0.0);
     }
 
-    public void turn90(Direction direction) {
-        robot.rightMotor.setPower(direction == Direction.RIGHT ? -turnSpeed : turnSpeed);
-        robot.leftMotor.setPower(direction == Direction.RIGHT ? turnSpeed : -turnSpeed);
+    public void turn(double theta) {
+        robot.rightMotor.setPower(theta < 0 ? -turnSpeed : turnSpeed);
+        robot.leftMotor.setPower(theta < 0 ? turnSpeed : -turnSpeed);
 
-        try {
-            Thread.sleep(1600);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        turning = true;
+        this.theta = theta * 0.955;
 
-        robot.rightMotor.setPower(0.0);
-        robot.leftMotor.setPower(0.0);
-    }
-
-    public void turn45(Direction direction) {
-        robot.rightMotor.setPower(direction == Direction.RIGHT ? -turnSpeed : turnSpeed);
-        robot.leftMotor.setPower(direction == Direction.RIGHT ? turnSpeed : -turnSpeed);
-
-        try {
-            Thread.sleep(900);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        while (turning) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         robot.rightMotor.setPower(0.0);
@@ -123,10 +167,14 @@ public class ToTheBeacon extends OpMode {
                     driveForward(24);*/
 
                     driveForward(48);
-                    turn90(Direction.RIGHT);
+                    turn(Math.PI / 2.0);
                     driveForward(48);
 
                     //driveForward(48);
+                } else {
+                    driveForward(48);
+                    turn(Math.PI);
+                    driveForward(48);
                 }
             }
 
