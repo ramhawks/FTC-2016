@@ -20,16 +20,16 @@ public class TestDrive extends DebuggableOpMode {
     void m_init() {
         timer = new ElapsedTime();
 
-        robot = new RamhawkHardware();
-        robot.init(hardwareMap);
+        robot = new RamhawkHardware(hardwareMap);
+
         driveTime = 1.0;
         speed = 0.5;
         running = false;
 
         go = false;
 
-        addDebugVar("Drive Time", driveTime);
-        addDebugVar("Speed", speed);
+        addDebugVar("Drive Time", driveTime, 0.05);
+        addDebugVar("Speed", speed, 0.05);
     }
 
     @Override

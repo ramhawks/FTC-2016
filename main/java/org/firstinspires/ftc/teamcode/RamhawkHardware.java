@@ -33,6 +33,10 @@ class RamhawkHardware {
     // Timer for tick
     private ElapsedTime period = new ElapsedTime();
 
+    public RamhawkHardware(HardwareMap hwMap) {
+        init(hwMap);
+    }
+
     // Initialize hardware
     public void init(HardwareMap ahwMap) {
         // Save reference to Hardware map
@@ -41,8 +45,7 @@ class RamhawkHardware {
         // Define and Initialize Motors
         leftMotor = hwMap.dcMotor.get("left_drive");
         rightMotor = hwMap.dcMotor.get("right_drive");
-        armMotor1 = hwMap.dcMotor.get("throw1");
-        // armMotor2 = hwMap.dcMotor.get("throw2");
+        armMotor1 = hwMap.dcMotor.get("throw");
 
         // Set directions of motors
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors

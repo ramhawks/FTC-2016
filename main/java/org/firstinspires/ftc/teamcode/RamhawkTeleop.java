@@ -43,7 +43,7 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "Ramhawk Teleop", group = "Main")
 public class RamhawkTeleop extends LinearOpMode {
     // Hardware
-    private RamhawkHardware robot = new RamhawkHardware();
+    private RamhawkHardware robot;
 
     @Override
     public void runOpMode() {
@@ -51,8 +51,7 @@ public class RamhawkTeleop extends LinearOpMode {
         double right;
         double max;
 
-        // Get hardware ready
-        robot.init(hardwareMap);
+        robot = new RamhawkHardware(hardwareMap);
 
         // Robot Controller's layout
         final View relativeLayout = ((Activity) robot.hwMap.appContext).findViewById(R.id.RelativeLayout);
@@ -75,14 +74,17 @@ public class RamhawkTeleop extends LinearOpMode {
             right = -gamepad1.left_stick_y - gamepad1.right_stick_x;
 
             // Normalize the values so neither exceed +/- 1.0
-            max = Math.max(Math.abs(left), Math.abs(right));
+            /*max = Math.max(Math.abs(left), Math.abs(right));
             if (max > 1.0) {
                 left /= max;
                 right /= max;
-            }
+            }*/
+
+            if (left > 0.4) left = 0.4;
+            if (right > 0.4) right = 0.4;
 
             /* // Temporarily remove distance sensor stopping movement
-            if (robot.distanceSensor.getRawLightDetected() > 0.05) {
+            if (hardware.distanceSensor.getRawLightDetected() > 0.05) {
                 if (left > 0) left = 0;
                 if (right > 0) right = 0;
                 telemetry.addData("Greater than 0.4?", "yes");
@@ -95,13 +97,13 @@ public class RamhawkTeleop extends LinearOpMode {
             // Use gamepad buttons to move arm up (Y) and down (A)
             if (gamepad1.y) {
                 robot.armMotor1.setPower(RamhawkHardware.ARM_UP_POWER);
-                // robot.armMotor2.setPower(RamhawkHardware.ARM_UP_POWER);
+                // hardware.armMotor2.setPower(RamhawkHardware.ARM_UP_POWER);
             } else if (gamepad1.a) {
                 robot.armMotor1.setPower(RamhawkHardware.ARM_DOWN_POWER);
-                // robot.armMotor2.setPower(RamhawkHardware.ARM_DOWN_POWER);
+                // hardware.armMotor2.setPower(RamhawkHardware.ARM_DOWN_POWER);
             } else {
                 robot.armMotor1.setPower(0.0);
-                // robot.armMotor2.setPower(0.0);
+                // hardware.armMotor2.setPower(0.0);
             }
 
             colorLedCurrentState = gamepad1.x;

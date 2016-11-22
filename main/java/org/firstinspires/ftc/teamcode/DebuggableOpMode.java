@@ -111,7 +111,7 @@ public abstract class DebuggableOpMode extends OpMode {
             if (obj.value instanceof Integer)
                 obj.value = (Integer) obj.value + (y ? 1 : (a ? -1 : 0));
             else if (obj.value instanceof Double)
-                obj.value = (Double) obj.value + (y ? 0.05d : (a ? -0.05d : 0.0d));
+                obj.value = (Double) obj.value + (y ? obj.amount : (a ? -obj.amount : 0.0));
             else if (obj.value instanceof Boolean && (y || a))
                 obj.value = !((Boolean) obj.value);
             vars.set(index, obj);
@@ -159,18 +159,20 @@ public abstract class DebuggableOpMode extends OpMode {
      * @param name is merely used to display vars on driver station
      */
 
-    protected final void addDebugVar(String name, Object object) {
-        vars.add(new DebugVar(name, object));
+    protected final void addDebugVar(String name, Object object, double amount) {
+        vars.add(new DebugVar(name, object, amount));
     }
 
     // Simple structure for
     private class DebugVar {
         String name;
         Object value;
+        double amount;
 
-        DebugVar(String name, Object value) {
+        DebugVar(String name, Object value, double amount) {
             this.name = name;
             this.value = value;
+            this.amount = amount;
         }
     }
 }

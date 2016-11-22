@@ -24,16 +24,16 @@ public class NinetyDegreeTurn extends DebuggableOpMode {
 
     @Override
     void m_init() {
-        robot = new RamhawkHardware();
+        robot = new RamhawkHardware(hardwareMap);
 
         // So far, best value
         turnTime = 1.8;
 
         turnSpeed = 0.5;
 
-        addDebugVar("Turn Time", turnTime);
+        addDebugVar("Turn Time", turnTime, 0.05);
 
-        addDebugVar("Turn Speed", turnSpeed);
+        addDebugVar("Turn Speed", turnSpeed, 0.05);
 
         running = false;
 
@@ -80,7 +80,7 @@ public class NinetyDegreeTurn extends DebuggableOpMode {
 
 
     /*
-    private RamhawkHardware robot = new RamhawkHardware();
+    private RamhawkHardware hardware = new RamhawkHardware();
 
     private static double turnTime = 1.8;
 
@@ -89,10 +89,10 @@ public class NinetyDegreeTurn extends DebuggableOpMode {
 
     public void runOpMode() throws InterruptedException {
 
-        robot.init(hardwareMap);
+        hardware.init(hardwareMap);
 
         // Layout for Robot Controller
-        final View relativeLayout = ((Activity) robot.hwMap.appContext).findViewById(R.id.RelativeLayout);
+        final View relativeLayout = ((Activity) hardware.hwMap.appContext).findViewById(R.id.RelativeLayout);
 
         waitForStart();
 
@@ -100,8 +100,8 @@ public class NinetyDegreeTurn extends DebuggableOpMode {
         telemetry.addData("Status", "Ready to run");
         telemetry.update();
 
-        robot.leftMotor.setPower(TURN_SPEED);
-        robot.rightMotor.setPower(-TURN_SPEED);
+        hardware.leftMotor.setPower(TURN_SPEED);
+        hardware.rightMotor.setPower(-TURN_SPEED);
         runtime.reset();
 
         while (opModeIsActive() && (runtime.seconds() < turnTime)) {
@@ -109,7 +109,7 @@ public class NinetyDegreeTurn extends DebuggableOpMode {
             telemetry.update();
         }
 
-        robot.waitForTick(40);
+        hardware.waitForTick(40);
     }
 
     private boolean yBefore = false;
