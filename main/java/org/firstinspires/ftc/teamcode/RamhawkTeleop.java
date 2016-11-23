@@ -43,7 +43,8 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "Ramhawk Teleop", group = "Main")
 public class RamhawkTeleop extends LinearOpMode {
     // Hardware
-    private RamhawkHardware robot;
+    //private RamhawkHardware robot;
+    private Robot robot;
 
     @Override
     public void runOpMode() {
@@ -51,10 +52,11 @@ public class RamhawkTeleop extends LinearOpMode {
         double right;
         double max;
 
-        robot = new RamhawkHardware(hardwareMap);
+        //robot = new RamhawkHardware(hardwareMap);
+        robot = new Robot(hardwareMap);
 
         // Robot Controller's layout
-        final View relativeLayout = ((Activity) robot.hwMap.appContext).findViewById(R.id.RelativeLayout);
+        final View relativeLayout = ((Activity) robot.hardware.hwMap.appContext).findViewById(R.id.RelativeLayout);
 
         // Greet the driver
         telemetry.addData("Say", "Hello Driver");    //
@@ -69,6 +71,10 @@ public class RamhawkTeleop extends LinearOpMode {
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            telemetry.addData("0", robot.linear_acceleration[0]);
+            telemetry.addData("1", robot.linear_acceleration[1]);
+            telemetry.addData("2", robot.linear_acceleration[2]);
+
             // Get joystick input from driver
             left = -gamepad1.left_stick_y + gamepad1.right_stick_x;
             right = -gamepad1.left_stick_y - gamepad1.right_stick_x;
@@ -91,18 +97,18 @@ public class RamhawkTeleop extends LinearOpMode {
             } else
                 telemetry.addData("Greater than 0.4?", "no");*/
 
-            robot.leftMotor.setPower(left);
-            robot.rightMotor.setPower(right);
+            robot.hardware.leftMotor.setPower(left);
+            robot.hardware.rightMotor.setPower(right);
 
             // Use gamepad buttons to move arm up (Y) and down (A)
             if (gamepad1.y) {
-                robot.armMotor1.setPower(RamhawkHardware.ARM_UP_POWER);
+                robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_UP_POWER);
                 // hardware.armMotor2.setPower(RamhawkHardware.ARM_UP_POWER);
             } else if (gamepad1.a) {
-                robot.armMotor1.setPower(RamhawkHardware.ARM_DOWN_POWER);
+                robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_DOWN_POWER);
                 // hardware.armMotor2.setPower(RamhawkHardware.ARM_DOWN_POWER);
             } else {
-                robot.armMotor1.setPower(0.0);
+                robot.hardware.armMotor1.setPower(0.0);
                 // hardware.armMotor2.setPower(0.0);
             }
 
@@ -111,37 +117,37 @@ public class RamhawkTeleop extends LinearOpMode {
             // check for button state transitions.
             if (colorLedCurrentState && !colorLedPreviousState) {
                 // button is transitioning to a pressed state. So Toggle LED
-                robot.ledOn = !robot.ledOn;
-                robot.colorSensor.enableLed(robot.ledOn);
+                robot.hardware.ledOn = !robot.hardware.ledOn;
+                robot.hardware.colorSensor.enableLed(robot.hardware.ledOn);
             }
 
             colorLedPreviousState = colorLedCurrentState;
 
-            Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, robot.hsvValues);
+            Color.RGBToHSV(robot.hardware.colorSensor.red() * 8, robot.hardware.colorSensor.green() * 8, robot.hardware.colorSensor.blue() * 8, robot.hardware.hsvValues);
 
             // Data relevant to drive
             telemetry.addData("left", "%.2f", left);
             telemetry.addData("right", "%.2f", right);
 
             // Data Relevant to distance sensor
-            telemetry.addData("Raw", robot.distanceSensor.getRawLightDetected());
-            telemetry.addData("Normal", robot.distanceSensor.getLightDetected());
-            telemetry.addData("Raw Max", robot.distanceSensor.getRawLightDetectedMax());
+            telemetry.addData("Raw", robot.hardware.distanceSensor.getRawLightDetected());
+            telemetry.addData("Normal", robot.hardware.distanceSensor.getLightDetected());
+            telemetry.addData("Raw Max", robot.hardware.distanceSensor.getRawLightDetectedMax());
 
             // Data relevant to LED
-            telemetry.addData("LED", robot.ledOn ? "On" : "Off");
-            telemetry.addData("Clear", robot.colorSensor.alpha());
-            telemetry.addData("Red  ", robot.colorSensor.red());
-            telemetry.addData("Green", robot.colorSensor.green());
-            telemetry.addData("Blue ", robot.colorSensor.blue());
-            telemetry.addData("Hue", robot.hsvValues[0]);
-            telemetry.addData("Saturation", robot.hsvValues[1]);
-            telemetry.addData("Value", robot.hsvValues[2]);
+            telemetry.addData("LED", robot.hardware.ledOn ? "On" : "Off");
+            telemetry.addData("Clear", robot.hardware.colorSensor.alpha());
+            telemetry.addData("Red  ", robot.hardware.colorSensor.red());
+            telemetry.addData("Green", robot.hardware.colorSensor.green());
+            telemetry.addData("Blue ", robot.hardware.colorSensor.blue());
+            telemetry.addData("Hue", robot.hardware.hsvValues[0]);
+            telemetry.addData("Saturation", robot.hardware.hsvValues[1]);
+            telemetry.addData("Value", robot.hardware.hsvValues[2]);
 
             // Change Robot Controller's background color to color sensor's readings
             relativeLayout.post(new Runnable() {
                 public void run() {
-                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, robot.hsvValues));
+                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, robot.hardware.hsvValues));
                 }
             });
 
@@ -149,7 +155,7 @@ public class RamhawkTeleop extends LinearOpMode {
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-            robot.waitForTick(40);
+            robot.hardware.waitForTick(40);
         }
     }
 }

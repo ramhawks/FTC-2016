@@ -10,21 +10,27 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
  * Created by Team11581 on 11/19/2016.
- *
  */
 
 public class Robot {
 
     public RamhawkHardware hardware;
 
-    private final double turnSpeed;
-    private boolean turning;
-    public double turningPercent;
-    private boolean done;
+    // Driving
+    private boolean driving;
+    private double drivingDistance;
+
+    // Turning
     private double theta;
+    private boolean turning;
+    private final double turnSpeed;
+    public double turningPercent;
 
     private SensorManager sensorManager;
-    private Sensor sensor;
+    private Sensor gyroscope;
+    private Sensor linearAccelerometer;
+
+    public float[] linear_acceleration = new float[3];
 
     public double actualSpeed;
 
@@ -34,11 +40,11 @@ public class Robot {
         turnSpeed = 0.5;
         turning = false;
         turningPercent = 0.7;
-        done = false;
         theta = -Math.PI / 2;
 
         sensorManager = (SensorManager) hardware.hwMap.appContext.getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        linearAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         sensorManager.registerListener(new SensorEventListener() {
             private static final double NS2S = 1.0 / 1000000000.0;
@@ -73,8 +79,37 @@ public class Robot {
             }
 
             @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-        }, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        }, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+
+        sensorManager.registerListener(new SensorEventListener() {
+            private float[] gravity = new float[3];
+            //private float[] linear_acceleration = new float[3];
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                // In this example, alpha is calculated as t / (t + dT),
+                // where t is the low-pass filter's time-constant and
+                // dT is the event delivery rate.
+
+                final float alpha = 0.8f;
+
+                // Isolate the force of gravity with the low-pass filter.
+                gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+                gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+                gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+                // Remove the gravity contribution with the high-pass filter.
+                linear_acceleration[0] = event.values[0] - gravity[0];
+                linear_acceleration[1] = event.values[1] - gravity[1];
+                linear_acceleration[2] = event.values[2] - gravity[2];
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        }, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
 
         actualSpeed = 11.0;
 
@@ -95,11 +130,15 @@ public class Robot {
         hardware.rightMotor.setPower(.6);
         hardware.leftMotor.setPower(.6);
 
-        try {
-            Thread.sleep((long) inchesToSeconds(distance) * 1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        driving = true;
+        drivingDistance = distance;
+
+        while (driving)
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
 
         hardware.rightMotor.setPower(0.0);
         hardware.leftMotor.setPower(0.0);
