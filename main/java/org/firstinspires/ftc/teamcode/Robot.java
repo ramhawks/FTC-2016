@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class Robot {
-
     public RamhawkHardware hardware;
 
     // Driving
@@ -104,6 +103,8 @@ public class Robot {
                 linear_acceleration[0] = event.values[0] - gravity[0];
                 linear_acceleration[1] = event.values[1] - gravity[1];
                 linear_acceleration[2] = event.values[2] - gravity[2];
+
+
             }
 
             @Override
