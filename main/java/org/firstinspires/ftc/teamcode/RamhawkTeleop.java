@@ -80,14 +80,14 @@ public class RamhawkTeleop extends LinearOpMode {
             right = -gamepad1.left_stick_y - gamepad1.right_stick_x;
 
             // Normalize the values so neither exceed +/- 1.0
-            /*max = Math.max(Math.abs(left), Math.abs(right));
+            max = Math.max(Math.abs(left), Math.abs(right));
             if (max > 1.0) {
                 left /= max;
                 right /= max;
-            }*/
+            }
 
-            if (left > 0.4) left = 0.4;
-            if (right > 0.4) right = 0.4;
+            /*if (left > 0.4) left = 0.4;
+            if (right > 0.4) right = 0.4;*/
 
             /* // Temporarily remove distance sensor stopping movement
             if (hardware.distanceSensor.getRawLightDetected() > 0.05) {
