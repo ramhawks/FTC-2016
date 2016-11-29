@@ -29,7 +29,7 @@ public class Robot {
     private Sensor gyroscope;
     private Sensor linearAccelerometer;
 
-    public float[] linear_acceleration = new float[3];
+    public double[] linear_acceleration = new double[3];
 
     public double actualSpeed;
 
@@ -110,7 +110,7 @@ public class Robot {
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
-        }, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+        }, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
         actualSpeed = 11.0;
 
