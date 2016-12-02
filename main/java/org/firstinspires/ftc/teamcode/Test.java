@@ -40,14 +40,15 @@ public class Test extends OpMode {
         last_time = System.currentTimeMillis();
 
         for (int i = 0; i < robot.linear_acceleration.length; i++) {
-            telemetry.addData("a" + i, df.format(robot.linear_acceleration[i]));
+            //telemetry.addData("a" + i, df.format(robot.linear_acceleration[i]));
+            telemetry.addData("a" + i, "%.7f", robot.linear_acceleration[i]);
         }
 
         // 0.001
 
         for (int i = 0; i < floored.length; i++) {
-            floored[i] = Math.floor(100 * robot.linear_acceleration[i]) / 100.0;
-            telemetry.addData("f" + i, df.format(floored[i]));
+            floored[i] = Math.floor(10.0 * robot.linear_acceleration[i]) / 10.0;
+            telemetry.addData("f" + i, "%.7f", floored[i]);
         }
 
         /*float[] accel = {

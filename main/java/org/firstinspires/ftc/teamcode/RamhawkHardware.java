@@ -22,7 +22,7 @@ class RamhawkHardware {
 
     // Arm thrusts for both direction
     static final double ARM_UP_POWER = 1;
-    static final double ARM_DOWN_POWER = -0.45;
+    static final double ARM_DOWN_POWER = -1;
 
     // Distance Sensor
     OpticalDistanceSensor distanceSensor;
