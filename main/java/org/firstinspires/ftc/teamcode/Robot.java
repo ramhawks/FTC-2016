@@ -13,25 +13,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class Robot {
+    private final double turnSpeed;
     public RamhawkHardware hardware;
-
+    public double turningPercent;
+    public double[] linear_acceleration = new double[3];
+    public double actualSpeed;
     // Driving
     private boolean driving;
     private double drivingDistance;
-
     // Turning
     private double theta;
     private boolean turning;
-    private final double turnSpeed;
-    public double turningPercent;
-
     private SensorManager sensorManager;
     private Sensor gyroscope;
     private Sensor linearAccelerometer;
-
-    public double[] linear_acceleration = new double[3];
-
-    public double actualSpeed;
 
     public Robot(HardwareMap hwMap) {
         hardware = new RamhawkHardware(hwMap);
@@ -47,8 +42,8 @@ public class Robot {
 
         sensorManager.registerListener(new SensorEventListener() {
             private static final double NS2S = 1.0 / 1000000000.0;
-            private double timestamp;
             public double totalRotation = 0;
+            private double timestamp;
             private boolean started = false;
 
             @Override
@@ -129,7 +124,7 @@ public class Robot {
 
     public void driveForward(double distance) {
         hardware.rightMotor.setPower(.6);
-        hardware.leftMotor.setPower(.6);
+        hardware.leftMotor.setPower(.65);
 
         driving = true;
         drivingDistance = distance;

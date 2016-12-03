@@ -38,7 +38,6 @@ import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "Ramhawk Teleop", group = "Main")
 public class RamhawkTeleop extends LinearOpMode {
@@ -76,8 +75,8 @@ public class RamhawkTeleop extends LinearOpMode {
             telemetry.addData("2", robot.linear_acceleration[2]);
 
             // Get joystick input from driver
-            left = -gamepad1.left_stick_y + gamepad1.right_stick_x;
-            right = -gamepad1.left_stick_y - gamepad1.right_stick_x;
+            left = (-gamepad1.left_stick_y + gamepad1.right_stick_x) * -1;
+            right = (-gamepad1.left_stick_y - gamepad1.right_stick_x) * -1;
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
