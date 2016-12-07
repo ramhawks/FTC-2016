@@ -94,12 +94,11 @@ public class RamhawkTeleop extends LinearOpMode {
 
             // Get joystick input from driver
 
-            if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1) {
+            if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1)
                 driving = true;
-            }
 
             if (driving) timePassedDriving += deltaTime;
-            else timePassedDriving = 0;
+            else timePassedDriving -= deltaTime;
 
             if (timePassedDriving < 120000) {
                 left = (-gamepad1.left_stick_y + gamepad1.right_stick_x) * -1;
@@ -142,7 +141,7 @@ public class RamhawkTeleop extends LinearOpMode {
             }
 
             if (armMoving) timePassedArm += deltaTime;
-            else timePassedArm = 0;
+            else timePassedArm -= deltaTime;
 
             colorLedCurrentState = gamepad1.x;
 
