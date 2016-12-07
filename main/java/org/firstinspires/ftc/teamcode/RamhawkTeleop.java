@@ -131,10 +131,14 @@ public class RamhawkTeleop extends LinearOpMode {
                 armMoving = true;
                 if (timePassedArm < 5000)
                     robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_UP_POWER);
+                else
+                    robot.hardware.armMotor1.setPower(0.0);
             } else if (gamepad1.a) {
                 armMoving = true;
                 if (timePassedArm < 5000)
                     robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_DOWN_POWER);
+                else
+                    robot.hardware.armMotor1.setPower(0.0);
             } else {
                 armMoving = false;
                 robot.hardware.armMotor1.setPower(0.0);
