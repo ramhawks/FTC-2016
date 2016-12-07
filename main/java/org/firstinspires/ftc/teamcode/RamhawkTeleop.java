@@ -45,6 +45,14 @@ public class RamhawkTeleop extends LinearOpMode {
     //private RamhawkHardware robot;
     private Robot robot;
 
+    private long lastTime;
+
+    private long timePassedDriving;
+    private boolean driving;
+
+    private long timePassedArm;
+    private boolean armMoving;
+
     @Override
     public void runOpMode() {
         double left;
@@ -68,15 +76,38 @@ public class RamhawkTeleop extends LinearOpMode {
         boolean colorLedCurrentState;
         boolean colorLedPreviousState = false;
 
+        timePassedDriving = 0;
+        driving = false;
+        lastTime = System.currentTimeMillis();
+
+        timePassedDriving = 0;
+        armMoving = false;
+
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("0", robot.linear_acceleration[0]);
             telemetry.addData("1", robot.linear_acceleration[1]);
             telemetry.addData("2", robot.linear_acceleration[2]);
 
+            long deltaTime = System.currentTimeMillis() - lastTime;
+            lastTime = System.currentTimeMillis();
+
             // Get joystick input from driver
-            left = (-gamepad1.left_stick_y + gamepad1.right_stick_x) * -1;
-            right = (-gamepad1.left_stick_y - gamepad1.right_stick_x) * -1;
+
+            if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_x) > 0.1) {
+                driving = true;
+            }
+
+            if (driving) timePassedDriving += deltaTime;
+            else timePassedDriving = 0;
+
+            if (timePassedDriving < 120000) {
+                left = (-gamepad1.left_stick_y + gamepad1.right_stick_x) * -1;
+                right = (-gamepad1.left_stick_y - gamepad1.right_stick_x) * -1;
+            } else {
+                left = 0;
+                right = 0;
+            }
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
@@ -84,9 +115,6 @@ public class RamhawkTeleop extends LinearOpMode {
                 left /= max;
                 right /= max;
             }
-
-            /*if (left > 0.4) left = 0.4;
-            if (right > 0.4) right = 0.4;*/
 
             /* // Temporarily remove distance sensor stopping movement
             if (hardware.distanceSensor.getRawLightDetected() > 0.05) {
@@ -101,15 +129,20 @@ public class RamhawkTeleop extends LinearOpMode {
 
             // Use gamepad buttons to move arm up (Y) and down (A)
             if (gamepad1.y) {
-                robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_UP_POWER);
-                // hardware.armMotor2.setPower(RamhawkHardware.ARM_UP_POWER);
+                armMoving = true;
+                if (timePassedArm < 5000)
+                    robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_UP_POWER);
             } else if (gamepad1.a) {
-                robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_DOWN_POWER);
-                // hardware.armMotor2.setPower(RamhawkHardware.ARM_DOWN_POWER);
+                armMoving = true;
+                if (timePassedArm < 5000)
+                    robot.hardware.armMotor1.setPower(RamhawkHardware.ARM_DOWN_POWER);
             } else {
+                armMoving = false;
                 robot.hardware.armMotor1.setPower(0.0);
-                // hardware.armMotor2.setPower(0.0);
             }
+
+            if (armMoving) timePassedArm += deltaTime;
+            else timePassedArm = 0;
 
             colorLedCurrentState = gamepad1.x;
 
