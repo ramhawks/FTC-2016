@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Forward", group="Main")
 public class Forward extends OpMode {
-    public RamhawkHardware hardware;
     private boolean done;
     private Robot robot;
     private ElapsedTime timer;
